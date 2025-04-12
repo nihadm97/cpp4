@@ -28,28 +28,13 @@
 
     <div id="exerciseDescription" class="alert alert-info">Odaberi zadatak kako bi pročitao opis zadatka i krenuo sa izradom rješenja.</div>
 
-    <label for="codeEditor" class="form-label">Napiši svoj C++ Code:</label>
-    <textarea id="codeEditor" class="form-control" rows="13" placeholder="// U ovom polju piši svoj code za zadatak" value="">
-    #include <iostream>
-    using namespace std;
-
-        int main() {
-           
-           // VAMO PIŠI SVOJ CODE NE BRIŠI DIO IZNAD ILI ISPOD
-
-           return 0;
-        }
-    </textarea>
-
-    <label for="inputField" class="form-label">Input za program (ako ostaviš prazno uzima se da je input broj 0):</label> 
-    <input type="text" id="inputField" class="form-control" placeholder="Unesi svoj input za testiranje code-a">
-
+    <iframe src="https://onecompiler.com/cpp" width="100%" height="600px"></iframe>
+    
     <div class="d-flex justify-content-between mt-3">
-      <button class="btn btn-primary" onclick="runCode()">Pokreni Code</button>
-      <button class="btn btn-success" onclick="runTests()">Pokreni Autotestove</button>
+      <button class="btn btn-success" onclick="runExample()">Primjeri ispisa</button>
     </div>
 
-    <div id="output" class="mt-3 alert alert-secondary" style="white-space: pre-wrap;">Output će biti prikazan u ovom polju...</div>
+    <div id="output" class="mt-3 alert alert-secondary" style="white-space: pre-line;"></div>
   </div>
 
   <script>
@@ -116,101 +101,17 @@
       },
     };
 
-    async function runCode() {
-      const code = document.getElementById('codeEditor').value;
-      const selectedExercise = document.getElementById('exerciseSelector').value;
-      let input = document.getElementById('inputField').value;
-      if (input === "") {
-        input = "0";
-      }
-      const outputElement = document.getElementById('output');
-
-      const data = new URLSearchParams({
-        code: code, 
-        language: 'cpp',
-        input: input,
-      });
-
-      const config = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: data
-      };
-
-      outputElement.textContent = "Code se pokreće...";
-
-      try {
-        const response = await fetch('https://api.codex.jaagrav.in', config);
-        const result = await response.json();
-        console.log(result.output);
-
-        if (result.output) {
-          outputElement.textContent = result.output;
-        } else {
-          outputElement.textContent = "Error: " + (result.error || "Nepoznati error se desio.");
+function runExample() {
+      const selectedValue = document.getElementById("exerciseSelector").value;
+      const exercise = exercises[selectedValue];
+      if (exercise) {
+        let outputText = "";
+        for (let i = 0; i < exercise.sampleInput.length; i++) {
+          outputText += `Za input ${exercise.sampleInput[i]} output je ${exercise.expectedOutput[i]}\n\n`;
         }
-      } catch (error) {
-        outputElement.textContent = "Error: " + error.message;
-      }
-    }
-
-    async function runTests() {
-      const selectedExercise = document.getElementById('exerciseSelector').value;
-      const exercise = exercises[selectedExercise];
-      const outputElement = document.getElementById('output');
-      
-      let testResults = [];
-      let allTestsPassed = true;
-
-      // Loop through the sample inputs and expected outputs
-      for (let i = 0; i < exercise.sampleInput.length; i++) {
-        const input = exercise.sampleInput[i];
-        const expected = exercise.expectedOutput[i];
-
-        // Run the code with the current input
-        const result = await runCodeWithInput(input);
-
-        // Compare the output
-        if (result.trim() === expected.trim()) {
-          testResults.push(`Test ${i + 1}: Prošao`);
-        } else {
-          testResults.push(`Test ${i + 1}: Pao (Očekivani output: "${expected}", Stvarni output tvog programa: "${result}")`);
-          allTestsPassed = false;
-        }
-      }
-
-      // Display the results
-      if (allTestsPassed) {
-        outputElement.textContent = "Svi testovi su uspješno završeni!";
+        document.getElementById("output").innerText = outputText.trim();
       } else {
-        outputElement.textContent = testResults.join("\n");
-      }
-    }
-
-    async function runCodeWithInput(input) {
-      const code = document.getElementById('codeEditor').value;
-      const data = new URLSearchParams({
-        code: code, 
-        language: 'cpp',
-        input: input,
-      });
-
-      const config = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: data
-      };
-
-      try {
-        const response = await fetch('https://api.codex.jaagrav.in', config);
-        const result = await response.json();
-        return result.output || "Error: " + (result.error || "Nepoznati error se desio.");
-      } catch (error) {
-        return "Error: " + error.message;
+        document.getElementById("output").innerText = "Molimo odaberite zadatak.";
       }
     }
 
@@ -220,8 +121,7 @@
       document.getElementById('exerciseDescription').textContent = exercise.description;
       document.getElementById('output').textContent = "Output će biti prikazan u ovom polju..."
     }
-
-    loadExercise();
+    
   </script>
 </body>
 </html>
