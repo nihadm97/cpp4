@@ -1,127 +1,273 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vježba C++ stringovi</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-  <div class="container">
-    <div class="mb-3">
-      <label for="exerciseSelector" class="form-label">Odaberi zadatak:</label>
-      <select id="exerciseSelector" class="form-select" onchange="loadExercise()">
-        <option value="1">Zadatak 1: Unos riječi</option>
-        <option value="2">Zadatak 2: Unos dvije riječi</option>
-        <option value="3">Zadatak 3: Dužina riječi</option>
-        <option value="4">Zadatak 4: Riječ i njena dužina</option>
-        <option value="5">Zadatak 5: Prvo slovo riječi</option>
-        <option value="6">Zadatak 6: Zadnje slovo riječi</option>
-        <option value="7">Zadatak 7: Treće slovo</option>
-        <option value="8">Zadatak 8: Matematička formula 1</option>
-        <option value="9">Zadatak 9: Matematička formula 2</option>
-        <option value="10">Zadatak 10: Matematička formula 3</option>
-        <option value="11">Zadatak 11: Nova riječ 1</option>
-        <option value="12">Zadatak 12: Nova riječ 2</option>
-      </select>
-    </div>
-
-    <div id="exerciseDescription" class="alert alert-info">Odaberi zadatak kako bi pročitao opis zadatka i krenuo sa izradom rješenja.</div>
-
-    <iframe src="https://onecompiler.com/cpp" width="100%" height="600px"></iframe>
-    
-    <div class="d-flex justify-content-between mt-3">
-      <button class="btn btn-success" onclick="runExample()">Primjeri ispisa</button>
-    </div>
-
-    <div id="output" class="mt-3 alert alert-secondary" style="white-space: pre-line;"></div>
-  </div>
-
-  <script>
-    const exercises = {
-      1: {
-        description: 'Napisati program koji omogućava korisniku da unese riječ i da je ispisuje.',
-        sampleInput: ["Krompir", "Supa", "Janjetina", "Gladan sam", "Što nema ništa za pojesti"],
-        expectedOutput: ["Krompir", "Supa", "Janjetina", "Gladan sam", "Što nema ništa za pojesti"]
-      },
-      2: {
-        description: 'Napisati program koji omogućava korisniku da unese dvije riječi i da ih ispisuje jednu pored druge odvojenu razmakom.',
-        sampleInput: ["Jaja Pavlaka", "Piletina Krompir", "Piletina Curry", "Teletina Riža", "Omlet Sir"],
-        expectedOutput: ["Jaja Pavlaka", "Piletina Krompir", "Piletina Curry", "Teletina Riža", "Omlet Sir"]
-      },
-      3: {
-        description: 'Napisati program koji omogućava korisniku da unese riječ i ispisuje koliko je duga ta riječ.',
-        sampleInput: ["Jaja", "Krompir", "Pištolj", "Janje", "Kiseljak"],
-        expectedOutput: ["4", "7", "7", "5", "8"]
-      },
-      4: {
-        description: 'Napisati program koji ispisuje unesenu riječ korisnika i koliko je duga, riječ i dužina su odvojene razmakom.',
-        sampleInput: ["Mačka", "Nissan", "TV", "Boulders Gate 3", "Grijalica"],
-        expectedOutput: ["Mačka 5", "Nissan 6", "TV 2", "Boulders Gate 3 15", "Gralija 15"]
-      },
-      5: {
-        description: 'Napisati program koji za unesenu riječ ispisuje njeno prvo slovo.',
-        sampleInput: ["Zvučnici", "Nutella", "časa", "pepsi", "Orbit"],
-        expectedOutput: ["Z", "N", "č", "p", "O"]
-      },
-      6: {
-        description: 'Napisati program koji za unesenu riječ ispisuje njeno zadnje slovo.',
-        sampleInput: ["0", "3.14", "1", "0.5", "1.57"],
-        expectedOutput: ["0 1", "0.00159255 -0.999999", "0.841471 0.540302", "0.479426 0.877583", "1 0.000796274"]
-      },
-      7: {
-        description: 'Napisati program koji za unesenu riječ ispisuje njeno treće slovo (riječ koji korisnuk unosi treba biti najmanje 3 slova duga).',
-        sampleInput: ["Pernica", "Novčanik", "Džojstik", "Punjač", "Kisela voda"],
-        expectedOutput: ["a", "k", "k", "č", "a"]
-      },
-      8: {
-        description: 'Napisati program koji za unesenu riječ računa njenu dužinu i proglašava je za vrijednost x. Nakon toga izračunaj vrijednost izraza: y = 7*x*x - 3*x + 2.',
-        sampleInput: ["Termostat", "Stepper motor", "Extruder", "Nozzle", "Napojna"],
-        expectedOutput: ["5", "70", "25", "19705", "329"]
-      },
-      9: {
-        description: 'Napisati program koji za unesene dvije riječ računa njene dužine i proglašava ih za vrijednost x i y. Nakon toga izračunati vrijednost x + y i ispisati je.',
-        sampleInput: ["Čovjek Mačka", "Muško Žensko", "USB Kafetin", "Miš Tastatura", "Knjiga Sveska"],
-        expectedOutput: ["1 0.0166667", "60 1", "166.667 2.77778", "16.8333 0.280556", "2 0.0333333"]
-      },
-      10: {
-        description: 'Napisati program koji za unesene dvije riječ računa njene dužine i proglašava ih za vrijednost x i y. Nakon toga izračunati vrijednost izraza: z = 7*x*x - 3*y + 2.',
-        sampleInput: ["Lenovo Dell", "Toyota Suzuki", "Tesla Samsung", "Xaomi Nokia", "Sony Microsoft"],
-        expectedOutput: ["72 60", "16 6", "60 100", "1008 960", "9154 227700"]
-      },
-      11: {
-        description: 'Napisati program koji za unesenu riječ uzima njeno prvo i zadnje slovo i napravi novu riječ (prvo slovo nove riječi je prvo slovo unesene riječi a drugo slovo je zadnje slovo unesene riječi). Ispisati novu riječ.',
-        sampleInput: ["Ja Ti", "On Ona", "Kako Zašto", "Mi Vi", "Vamo Tamo"],
-        expectedOutput: ["JT", "OO", "KZ", "MV", "VT"]
-      },
-      12: {
-        description: 'Napisati program koji za unesene dvije riječ napravi riječ koja se sastoji od prvi i zadnjih slova tih riječi (prvo slovo je prvo slovo od prve riječi, drugo slovo je drugo slovo od prve riječi, treće slovo je prvo slovo od druge riječi i četvrto slovo je drugo slovo od druge riječi).',
-        sampleInput: ["Ako Možda", "Andrej Ajnur", "Martin Luka", "Ajla Zara", "Berina Amina"],
-        expectedOutput: ["AkMo", "AnAj", "MaLu", "AjZa", "Beam"]
-      },
-    };
-
-function runExample() {
-      const selectedValue = document.getElementById("exerciseSelector").value;
-      const exercise = exercises[selectedValue];
-      if (exercise) {
-        let outputText = "";
-        for (let i = 0; i < exercise.sampleInput.length; i++) {
-          outputText += `Za input ${exercise.sampleInput[i]} output je ${exercise.expectedOutput[i]}\n\n`;
-        }
-        document.getElementById("output").innerText = outputText.trim();
-      } else {
-        document.getElementById("output").innerText = "Molimo odaberite zadatak.";
-      }
-    }
-
-    function loadExercise() {
-      const selectedExercise = document.getElementById('exerciseSelector').value;
-      const exercise = exercises[selectedExercise];
-      document.getElementById('exerciseDescription').textContent = exercise.description;
-      document.getElementById('output').textContent = "Output će biti prikazan u ovom polju..."
-    }
-    
-  </script>
-</body>
-</html>
+<html lang="bs">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>C++ – Stringovi</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"><style>
+#exerciseDescription math { font-size: 1.25em; math-style: normal; margin-inline: .12em; white-space: nowrap; }
+#exerciseDescription { line-height: 1.85; }
+</style></head>
+<body><div class="container mt-3">
+<div class="mb-3"><label for="exerciseSelector" class="form-label">Odaberi zadatak:</label>
+<select id="exerciseSelector" class="form-select" onchange="loadExercise()">
+      <option value="1">🟢 Zadatak 1: Grad sa kulturnom baštinom</option>
+      <option value="2">🟢 Zadatak 2: Dva grada na turističkoj ruti</option>
+      <option value="3">🟠 Zadatak 3: Dužina riječi</option>
+      <option value="4">🟠 Zadatak 4: Naziv organa</option>
+      <option value="5">🟠 Zadatak 5: Prvo slovo</option>
+      <option value="6">🔴 Zadatak 6: Zadnje slovo</option>
+      <option value="7">🟠 Zadatak 7: Treće slovo</option>
+      <option value="8">🔴 Zadatak 8: Izraz i dužina riječi</option>
+      <option value="9">🟠 Zadatak 9: Zbir dužina</option>
+      <option value="10">🔴 Zadatak 10: Dvije riječi i izraz</option>
+      <option value="11">🟠 Zadatak 11: Nova riječ</option>
+      <option value="12">🔴 Zadatak 12: Kombinovanje riječi</option>
+</select></div>
+<div id="exerciseDescription" class="alert alert-info"></div>
+<iframe title="C++ online kompajler" src="https://onecompiler.com/cpp" width="100%" height="600px"></iframe>
+<div class="d-flex justify-content-between mt-3"><button class="btn btn-success" onclick="runExample()">Primjeri ispisa</button></div>
+<div id="output" class="mt-3 alert alert-secondary" style="white-space: pre-wrap; overflow-wrap: anywhere;" aria-live="polite">Output će biti prikazan u ovom polju...</div>
+</div><script>
+const exercises = {
+  "1": {
+    "title": "Grad sa kulturnom baštinom",
+    "description": "Za izradu kataloga kulturne baštine BiH unosi se naziv grada u kojem se nalazi kulturna znamenitost. Naziv treba biti jedna riječ bez dijakritičkih znakova. Ispisati uneseni naziv.",
+    "sampleInput": [
+      "Mostar",
+      "Sarajevo",
+      "Jajce",
+      "Stolac",
+      "Travnik"
+    ],
+    "expectedOutput": [
+      "Mostar",
+      "Sarajevo",
+      "Jajce",
+      "Stolac",
+      "Travnik"
+    ],
+    "level": 0,
+    "descriptionHtml": "Za izradu kataloga kulturne baštine BiH unosi se naziv grada u kojem se nalazi kulturna znamenitost. Naziv treba biti jedna riječ bez dijakritičkih znakova. Ispisati uneseni naziv."
+  },
+  "2": {
+    "title": "Dva grada na turističkoj ruti",
+    "description": "Za planiranje obilaska kulturnih znamenitosti Bosne i Hercegovine unose se nazivi dva grada (po jedna riječ, bez dijakritičkih znakova). Ispisati oba naziva odvojena razmakom.",
+    "sampleInput": [
+      "Sarajevo Mostar",
+      "Jajce Travnik",
+      "Stolac Mostar",
+      "Visoko Sarajevo",
+      "Konjic Jajce"
+    ],
+    "expectedOutput": [
+      "Sarajevo Mostar",
+      "Jajce Travnik",
+      "Stolac Mostar",
+      "Visoko Sarajevo",
+      "Konjic Jajce"
+    ],
+    "level": 0,
+    "descriptionHtml": "Za planiranje obilaska kulturnih znamenitosti Bosne i Hercegovine unose se nazivi dva grada (po jedna riječ, bez dijakritičkih znakova). Ispisati oba naziva odvojena razmakom."
+  },
+  "3": {
+    "title": "Dužina riječi",
+    "description": "Unijeti riječ i ispisati broj znakova. Koristiti znakove bez dijakritike.",
+    "sampleInput": [
+      "Knjiga",
+      "Olovka",
+      "Prozor",
+      "Glagol",
+      "Imenica"
+    ],
+    "expectedOutput": [
+      "6",
+      "6",
+      "6",
+      "6",
+      "7"
+    ],
+    "level": 1,
+    "descriptionHtml": "Unijeti riječ i ispisati broj znakova. Koristiti znakove bez dijakritike."
+  },
+  "4": {
+    "title": "Naziv organa",
+    "description": "Unijeti naziv organa (jedna riječ) i ispisati naziv i broj znakova, odvojene razmakom. Koristiti znakove bez dijakritike.",
+    "sampleInput": [
+      "Srce",
+      "Jetra",
+      "Mozak",
+      "Bubreg",
+      "Pluca"
+    ],
+    "expectedOutput": [
+      "Srce 4",
+      "Jetra 5",
+      "Mozak 5",
+      "Bubreg 6",
+      "Pluca 5"
+    ],
+    "level": 1,
+    "descriptionHtml": "Unijeti naziv organa (jedna riječ) i ispisati naziv i broj znakova, odvojene razmakom. Koristiti znakove bez dijakritike."
+  },
+  "5": {
+    "title": "Prvo slovo",
+    "description": "Unijeti naziv elementa i ispisati prvo slovo. Koristiti znakove bez dijakritike.",
+    "sampleInput": [
+      "Vodik",
+      "Kisik",
+      "Ugljik",
+      "Helij",
+      "Azot"
+    ],
+    "expectedOutput": [
+      "V",
+      "K",
+      "U",
+      "H",
+      "A"
+    ],
+    "level": 1,
+    "descriptionHtml": "Unijeti naziv elementa i ispisati prvo slovo. Koristiti znakove bez dijakritike."
+  },
+  "6": {
+    "title": "Zadnje slovo",
+    "description": "Unijeti riječ i ispisati zadnje slovo. Koristiti znakove bez dijakritike.",
+    "sampleInput": [
+      "Knjiga",
+      "Prozor",
+      "Glagol",
+      "Imenica",
+      "Pero"
+    ],
+    "expectedOutput": [
+      "a",
+      "r",
+      "l",
+      "a",
+      "o"
+    ],
+    "level": 2,
+    "descriptionHtml": "Unijeti riječ i ispisati zadnje slovo. Koristiti znakove bez dijakritike."
+  },
+  "7": {
+    "title": "Treće slovo",
+    "description": "Unijeti englesku riječ sa najmanje tri slova i ispisati treće slovo. Koristiti znakove bez dijakritike.",
+    "sampleInput": [
+      "School",
+      "Book",
+      "Teacher",
+      "Pencil",
+      "Window"
+    ],
+    "expectedOutput": [
+      "h",
+      "o",
+      "a",
+      "n",
+      "n"
+    ],
+    "level": 1,
+    "descriptionHtml": "Unijeti englesku riječ sa najmanje tri slova i ispisati treće slovo. Koristiti znakove bez dijakritike."
+  },
+  "8": {
+    "title": "Izraz i dužina riječi",
+    "description": "Unijeti riječ. Neka je x broj znakova riječi. Izračunati y = 7x² − 3x + 2. Koristiti znakove bez dijakritike.",
+    "sampleInput": [
+      "Termostat",
+      "Motor",
+      "Knjiga",
+      "Olovka",
+      "Monitor"
+    ],
+    "expectedOutput": [
+      "542",
+      "162",
+      "236",
+      "236",
+      "324"
+    ],
+    "level": 2,
+    "descriptionHtml": "Unijeti riječ. Neka je <math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"inline\" aria-label=\"x\"><mrow><mi>x</mi></mrow></math> broj znakova riječi. Izračunati <math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"inline\" aria-label=\"y = 7x² − 3x + 2\"><mrow><mi>y</mi><mo>=</mo><mn>7</mn><msup><mi>x</mi><mn>2</mn></msup><mo>−</mo><mn>3</mn><mi>x</mi><mo>+</mo><mn>2</mn></mrow></math>. Koristiti znakove bez dijakritike."
+  },
+  "9": {
+    "title": "Zbir dužina",
+    "description": "Unijeti dvije riječi i ispisati zbir njihovih dužina. Koristiti znakove bez dijakritike.",
+    "sampleInput": [
+      "Knjiga Sveska",
+      "Glagol Imenica",
+      "Pero Papir",
+      "Dan Noc",
+      "Sunce Oblak"
+    ],
+    "expectedOutput": [
+      "12",
+      "13",
+      "9",
+      "6",
+      "10"
+    ],
+    "level": 1,
+    "descriptionHtml": "Unijeti dvije riječi i ispisati zbir njihovih dužina. Koristiti znakove bez dijakritike."
+  },
+  "10": {
+    "title": "Dvije riječi i izraz",
+    "description": "Unijeti dvije riječi dužina x i y. Izračunati z = 7x² − 3y + 2. Koristiti znakove bez dijakritike.",
+    "sampleInput": [
+      "Lenovo Dell",
+      "Toyota Suzuki",
+      "Tesla Samsung",
+      "Xiaomi Nokia",
+      "Sony Microsoft"
+    ],
+    "expectedOutput": [
+      "242",
+      "236",
+      "156",
+      "239",
+      "87"
+    ],
+    "level": 2,
+    "descriptionHtml": "Unijeti dvije riječi dužina <math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"inline\" aria-label=\"x\"><mrow><mi>x</mi></mrow></math> i <math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"inline\" aria-label=\"y\"><mrow><mi>y</mi></mrow></math>. Izračunati <math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"inline\" aria-label=\"z = 7x² − 3y + 2\"><mrow><mi>z</mi><mo>=</mo><mn>7</mn><msup><mi>x</mi><mn>2</mn></msup><mo>−</mo><mn>3</mn><mi>y</mi><mo>+</mo><mn>2</mn></mrow></math>. Koristiti znakove bez dijakritike."
+  },
+  "11": {
+    "title": "Nova riječ",
+    "description": "Unijeti riječ i spojiti njeno prvo i zadnje slovo u novu riječ. Koristiti znakove bez dijakritike.",
+    "sampleInput": [
+      "Knjiga",
+      "Prozor",
+      "Glagol",
+      "Imenica",
+      "Pero"
+    ],
+    "expectedOutput": [
+      "Ka",
+      "Pr",
+      "Gl",
+      "Ia",
+      "Po"
+    ],
+    "level": 1,
+    "descriptionHtml": "Unijeti riječ i spojiti njeno prvo i zadnje slovo u novu riječ. Koristiti znakove bez dijakritike."
+  },
+  "12": {
+    "title": "Kombinovanje riječi",
+    "description": "Unijeti dvije riječi od najmanje dva slova. Spojiti prva dva slova prve i prva dva slova druge riječi. Koristiti znakove bez dijakritike.",
+    "sampleInput": [
+      "Ako Mozda",
+      "Andrej Ajnur",
+      "Martin Luka",
+      "Ajla Zara",
+      "Berina Amina"
+    ],
+    "expectedOutput": [
+      "AkMo",
+      "AnAj",
+      "MaLu",
+      "AjZa",
+      "BeAm"
+    ],
+    "level": 2,
+    "descriptionHtml": "Unijeti dvije riječi od najmanje dva slova. Spojiti prva dva slova prve i prva dva slova druge riječi. Koristiti znakove bez dijakritike."
+  }
+};
+function loadExercise() { const e=exercises[document.getElementById('exerciseSelector').value]; document.getElementById('exerciseDescription').innerHTML=e.descriptionHtml; document.getElementById('output').textContent='Output će biti prikazan u ovom polju...'; }
+function runExample() { const e=exercises[document.getElementById('exerciseSelector').value]; const blocks=e.expectedOutput.map((v,i)=> (e.sampleInput.length ? 'Ulaz: '+e.sampleInput[i]+'\n' : 'Bez unosa\n')+'Izlaz:\n'+v); document.getElementById('output').textContent=(e.random?'Mogući ispis (rezultat se može razlikovati):\n\n':'')+blocks.join('\n\n'); }
+loadExercise();
+</script></body></html>
